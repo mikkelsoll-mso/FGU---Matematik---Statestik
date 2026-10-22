@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Statistik – flashcards</title>
+<style>
+:root{--bg:#f4f6fa;--card:#fff;--ink:#1b2a41;--mut:#5b6b82;--blue:#1f4b86;--bd:#d5dce8;--ok:#2e7d32;--okbg:#e3f3e4;--no:#c62828;--nobg:#fbe4e4;--hl:#e8f0fb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#12161d;--card:#1c222c;--ink:#e8edf5;--mut:#9aa8bd;--blue:#7fb0f0;--bd:#344054;--ok:#7ad07f;--okbg:#1d3a20;--no:#f08a8a;--nobg:#401f1f;--hl:#23304a}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#12161d;--card:#1c222c;--ink:#e8edf5;--mut:#9aa8bd;--blue:#7fb0f0;--bd:#344054;--ok:#7ad07f;--okbg:#1d3a20;--no:#f08a8a;--nobg:#401f1f;--hl:#23304a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.45}
+main{max-width:640px;margin:0 auto;padding:16px}
+h1{font-size:1.1rem;margin:0 0 4px;color:var(--blue)}
+.top{display:flex;justify-content:space-between;align-items:center;color:var(--mut);font-size:.9rem;margin-bottom:12px}
+.bar{height:6px;background:var(--bd);border-radius:3px;overflow:hidden;margin-bottom:16px}
+.bar i{display:block;height:100%;background:var(--blue);width:0;transition:width .3s}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:20px}
+.lbl{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.def{font-size:1.2rem;font-weight:600;margin:6px 0 14px}
+.ex{background:var(--hl);border-radius:10px;padding:10px 12px;font-size:.95rem;color:var(--ink)}
+.q{margin:18px 0 8px;font-weight:600}
+.opts{display:grid;gap:8px}
+button{font:inherit;color:var(--ink);background:var(--card);border:2px solid var(--bd);border-radius:10px;padding:12px 14px;text-align:left;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--blue)}
+button:disabled{cursor:default}
+button.ok{border-color:var(--ok);background:var(--okbg)}
+button.no{border-color:var(--no);background:var(--nobg)}
+.fb{min-height:1.5em;margin:12px 0 0;font-weight:600}
+.next{margin-top:12px;background:var(--blue);color:var(--card);border-color:var(--blue);text-align:center;display:none;width:100%}
+.res{text-align:center}
+.res .big{font-size:2.4rem;font-weight:700;color:var(--blue)}
+.res button{text-align:center;margin-top:12px;width:100%}
+.res .sec{background:var(--hl);border-color:var(--blue);color:var(--blue);font-weight:600}
+.cong .emo{font-size:4rem;animation:pop 1s ease-in-out infinite alternate}
+.cong .big{font-size:2.6rem;letter-spacing:.04em}
+@keyframes pop{from{transform:scale(1) rotate(-6deg)}to{transform:scale(1.2) rotate(6deg)}}
+.conf{position:fixed;top:-2rem;font-size:1.6rem;pointer-events:none;z-index:30;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(115vh) rotate(540deg)}}
+@media (prefers-reduced-motion:reduce){.cong .emo{animation:none}}
+.help{display:none;margin-top:14px;width:100%;text-align:center;background:var(--hl);border-color:var(--blue);color:var(--blue);font-weight:600}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+.modal.on{display:flex}
+.mbox{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:20px;max-width:520px;width:100%;max-height:85vh;overflow:auto}
+.mbox p{font-size:1.05rem;margin:8px 0 16px}
+.mbox button{width:100%;text-align:center;background:var(--blue);color:var(--card);border-color:var(--blue)}
+.vis{background:var(--hl);border-radius:10px;padding:14px 10px;margin:0 0 12px}
+.row{display:flex;gap:4px;align-items:flex-start}
+.nw{flex:1;min-width:0;text-align:center}
+.nw small{display:block;font-size:.62rem;color:var(--mut);margin-top:3px;line-height:1.2}
+.nb{display:block;border:2px solid var(--bd);border-radius:8px;padding:8px 0;font-weight:700;background:var(--card)}
+.nb.hl{border-color:var(--ok);background:var(--okbg)}
+.grp{border:2px solid var(--ok);border-radius:10px;padding:6px}
+.tk{display:block;width:2px;height:12px;margin:2px auto 0;background:transparent}
+.tk.on{background:var(--ok)}
+.cap{text-align:center;margin-top:10px;font-size:.9rem;color:var(--mut)}
+.cap.b{font-weight:700;color:var(--ink);font-size:1rem}
+.dots{height:66px;display:flex;flex-direction:column-reverse;align-items:center}
+.dot{display:block;width:16px;height:16px;border-radius:50%;background:#6c9bd2;margin:1px 0}
+.dot.g{background:#5aa545}
+.dd{gap:6px}
+.dd .dot{flex:1;max-width:32px;height:auto;aspect-ratio:1;margin:0;background:var(--bd)}
+.dd .dot.g{background:#5aa545}
+.cols .nw>b{display:block;margin-top:2px}
+.arr{flex:none;width:12px;margin-top:10px;color:var(--mut);font-size:.8rem}
+.pb{height:12px;background:var(--bd);border-radius:6px;overflow:hidden;margin:6px 3px}
+.pb i{display:block;height:100%;background:#5aa545}
+.avg{text-align:center;font-weight:700}
+.avg .bar2{height:2px;background:var(--ok);margin:8px 16px}
+.nl{width:100%;height:auto}
+.st{fill:var(--ink);font:600 11px system-ui,sans-serif}
+.nl .ar{stroke:var(--mut);stroke-width:1.5}
+.nl .af{fill:var(--mut)}
+.nl .gl{stroke:var(--ok);stroke-width:4}
+.nl .fc{fill:var(--ok);stroke:var(--ok);stroke-width:2}
+.nl .oc{fill:var(--card);stroke:var(--ok);stroke-width:3}
+</style>
+</head>
+<body>
+<main>
+  <h1>Statistik – hvilket begreb er det?</h1>
+  <div class="top"><span id="pos"></span><span id="score"></span></div>
+  <div class="bar"><i id="bar"></i></div>
+  <div id="app"></div>
+</main>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mt"><div class="mbox"><div class="lbl" id="mt">💡 Lidt længere forklaring</div><p id="mp"></p><button id="mc">Luk</button></div></div>
+<script>
+const C=[
+["Observationssæt","Alle de tal eller data, vi har samlet.","7 elever svarer: 2, 1, 3, 0, 2, 1, 2 – alle 7 tal tilsammen."],
+["Observation","En enkelt værdi fra vores data.","Elev 4 svarer 0 søskende – det er ét enkelt svar."],
+["Hyppighed","Hvor mange gange et bestemt tal eller svar optræder.","Tallet 2 optræder 3 gange."],
+["Summeret hyppighed","Antallene for hvert tal lægges sammen løbende, indtil alle elever er talt med.","1, 1+2 = 3, 3+3 = 6, 6+1 = 7 – til sidst har vi talt alle 7 elever."],
+["Frekvens","Hvor stor en procentdel et bestemt antal udgør af det samlede antal.","3 elever ud af 7 har 2 søskende: 3 / 7 × 100 = 42,9 %."],
+["Summeret frekvens","Procentandelene lægges sammen løbende, indtil man når 100 %.","14,3 % → 42,9 % → 85,7 % → 100 %."],
+["Typetal","Det tal eller svar, der forekommer flest gange.","2, 1, 3, 0, 2, 1, 2 – tallet 2 er med 3 gange."],
+["Gennemsnit","Alle tallene lægges sammen og divideres med antallet af tal.","(2+1+3+0+2+1+2) / 7 = 11 / 7 = 1,57 – ca. 1,6 søskende."],
+["Median","Tallene sættes i rækkefølge fra mindst til størst. Det midterste tal er svaret.","0, 1, 1, <b>2</b>, 2, 2, 3 – det midterste tal er 2."],
+["Mindsteværdi","Det mindste tal i vores data.","0, 1, 1, 2, 2, 2, 3 – det mindste tal er 0."],
+["Størsteværdi","Det største tal i vores data.","0, 1, 1, 2, 2, 2, 3 – det største tal er 3."],
+["Variationsbredde","Forskellen mellem det største og det mindste tal.","3 − 0 = 3."]
+];
+const H=[
+"Forestil dig, at du spørger 7 elever, hvor mange søskende de har. Du skriver alle svarene ned: 2, 1, 3, 0, 2, 1, 2. Hele listen med alle svarene er det, vi leder efter. Det er altså ikke ét enkelt svar, men alle svarene samlet på ét sted. Det er dine data.",
+"Når du har en liste med svar fra mange elever, er hvert enkelt svar på listen en ting for sig. Elev 4 svarede 0 søskende. Det ene svar er det, vi leder efter. En liste med 7 svar indeholder altså 7 af dem, ét for hver elev.",
+"Her tæller vi, hvor tit noget sker. Kig på svarene 2, 1, 3, 0, 2, 1, 2. Tallet 2 står der 3 gange. Tallet 1 står der 2 gange. Tallene 0 og 3 står der 1 gang hver. Det antal gange, fx 3 for tallet 2, er det, vi leder efter. Du finder det ved at sætte en streg, hver gang tallet dukker op.",
+"Vi tæller, hvor mange elever der har 0 søskende: 1. Så lægger vi dem med 1 søskende til: 1 + 2 = 3. Så dem med 2: 3 + 3 = 6. Til sidst dem med 3: 6 + 1 = 7. Vi bygger altså et antal op trin for trin, og det sidste tal er altid det samlede antal elever. Det handler om antal, ikke om procent.",
+"Nogle gange er det nemmere at sammenligne med procent. 3 elever ud af 7 har 2 søskende. Vi regner: 3 ÷ 7 × 100 = 42,9 %. Så knap halvdelen af eleverne har 2 søskende. Det er procenten for ét bestemt tal, vi leder efter.",
+"Først har vi en procent for hvert tal: 14,3 %, 28,6 %, 42,9 % og 14,3 %. Så lægger vi dem sammen løbende: 14,3 % → 42,9 % → 85,7 % → 100 %. Det fortæller fx, at 85,7 % af eleverne har 2 søskende eller færre. Det sidste tal er altid 100 %.",
+"Hvilket svar har flest elever givet? Tæl efter: 2 står 3 gange, 1 står 2 gange, og 0 og 3 står 1 gang hver. Tallet 2 vinder, fordi det står flest gange. Du finder det bare ved at tælle, du skal ikke regne noget ud.",
+"Tænk, at alle skulle have lige mange. Læg først alle svarene sammen: 2+1+3+0+2+1+2 = 11. Del så med antal elever: 11 ÷ 7 = 1,57. Hvis alle havde lige mange søskende, ville det være cirka 1,6 hver. Det er ikke nødvendigvis et tal, nogen faktisk har svaret.",
+"Sæt først alle tallene i rækkefølge fra lavest til højest: 0, 1, 1, 2, 2, 2, 3. Streg så af fra begge ender, til der kun er ét tal tilbage i midten. Her er det 2. Der er lige mange tal på hver side af det. Hvis der er et lige antal tal, tager du de to i midten og finder tallet midt imellem.",
+"Kig på alle tallene og find det laveste. Det er nemmest, hvis du sætter dem i rækkefølge: 0, 1, 1, 2, 2, 2, 3. Det første tal i rækken er 0. Ingen af eleverne har færre søskende end det.",
+"Kig på alle tallene og find det højeste. Det er nemmest, hvis du sætter dem i rækkefølge: 0, 1, 1, 2, 2, 2, 3. Det sidste tal i rækken er 3. Ingen af eleverne har flere søskende end det.",
+"Det viser, hvor spredt tallene er. Find det højeste tal (3) og det laveste tal (0), og træk dem fra hinanden: 3 − 0 = 3. Er svaret lille, ligger tallene tæt på hinanden. Er svaret stort, er der stor forskel på svarene."
+];
+const modal=document.getElementById('modal');
+function openHelp(k){document.getElementById('mp').textContent=H[k];modal.classList.add('on');document.getElementById('mc').focus()}
+function closeHelp(){modal.classList.remove('on')}
+document.getElementById('mc').onclick=closeHelp;
+modal.onclick=e=>{if(e.target===modal)closeHelp()};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp()});
+const S=[0,1,1,2,2,2,3],R=[2,1,3,0,2,1,2];
+const cap=(t,b)=>`<div class='cap${b?' b':''}'>${t}</div>`;
+const bx=(a,h,lab,tk)=>`<div class='row'>${a.map((n,k)=>`<div class='nw'><span class='nb${h.includes(k)?' hl':''}'>${n}</span>${lab?`<small>Elev ${k+1}</small>`:''}${tk?`<i class='tk${h.includes(k)?' on':''}'></i>`:''}</div>`).join('')}</div>`;
+const V=[
+()=>`<div class='grp'>${bx(R,[],1)}</div>`+cap('7 elever svarer: hvor mange søskende?'),
+()=>bx(R,[3],1,1)+cap('Elev 4 svarer 0 søskende',1),
+()=>`<div class='row cols'>${[1,2,3,1].map((c,k)=>`<div class='nw'><div class='dots'>${`<b class='dot${k==2?' g':''}'></b>`.repeat(c)}</div><b>${k}</b><small>${c} ${c>1?'gange':'gang'}</small></div>`).join('')}</div>`+cap('Tallet 2 optræder 3 gange',1),
+()=>`<div class='row'>${[[1,'1','0'],[3,'1 + 2','1'],[6,'3 + 3','2'],[7,'6 + 1','3']].map((a,k)=>`${k?`<span class='arr'>→</span>`:''}<div class='nw'><span class='nb${k==3?' hl':''}'>${a[0]}</span><small>${a[1]}</small><small>${a[2]} søsk.</small></div>`).join('')}</div>`+cap('Til sidst har vi talt alle 7 elever',1),
+()=>`<div class='row dd'>${[1,1,1,0,0,0,0].map(g=>`<b class='dot${g?' g':''}'></b>`).join('')}</div>`+cap('3 / 7 × 100 = 42,9 %',1),
+()=>`<div class='row cols'>${[['14,3',14.3,0],['42,9',42.9,1],['85,7',85.7,2],['100',100,3]].map(a=>`<div class='nw'><div class='pb'><i style='width:${a[1]}%'></i></div><b>${a[0]} %</b><small>${a[2]} søsk.</small></div>`).join('')}</div>`+cap('Til sidst er summen 100 %',1),
+()=>bx(R,[0,4,6])+cap('2 er med 3 gange',1),
+()=>`<div class='avg'><div>2 + 1 + 3 + 0 + 2 + 1 + 2</div><div class='bar2'></div><div class='cap b'>11 / 7 = 1,57</div></div>`+cap('Cirka 1,6 søskende'),
+()=>bx(S,[3],0,1)+cap('Det midterste tal er 2',1),
+()=>bx(S,[0],0,1)+cap('0 er det mindste tal',1),
+()=>bx(S,[6],0,1)+cap('3 er det største tal',1),
+()=>`<svg viewBox='0 0 300 84' class='nl' role='img' aria-label='Talrække fra 0 til 3'><text x='150' y='11' text-anchor='middle' class='st'>FORSKEL FRA 0 TIL 3</text><line x1='30' y1='24' x2='270' y2='24' class='ar'/><path d='M30 24l8-4v8zM270 24l-8-4v8z' class='af'/><line x1='30' y1='52' x2='270' y2='52' class='gl'/>${[0,1,2,3].map(k=>`<circle cx='${30+k*80}' cy='52' r='7' class='${k%3?'oc':'fc'}'/><text x='${30+k*80}' y='76' text-anchor='middle' class='st'>${k}</text>`).join('')}</svg>`+cap('3 − 0 = 3',1)
+];
+const app=document.getElementById('app');
+let order,i,score,answered,tm,rounds=0;const wrong=new Set();
+const shuffle=a=>{a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a};
+function start(only){order=(only===true&&wrong.size)?shuffle([...wrong]):shuffle(C.map((_,k)=>k));i=0;score=0;rounds++;show()}
+function fresh(){wrong.clear();rounds=0;start(false)}
+function head(){document.getElementById('pos').textContent=i<order.length?`Kort ${i+1} af ${order.length}`:'Færdig';document.getElementById('score').textContent=`Rigtige: ${score}`;document.getElementById('bar').style.width=(i/order.length*100)+'%'}
+function confetti(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const e=['🎉','🎊','⭐','✨'];
+  for(let k=0;k<45;k++){
+    const s=document.createElement('span');s.className='conf';s.textContent=e[k%e.length];
+    s.style.left=(Math.random()*96)+'vw';s.style.animationDuration=(2.5+Math.random()*2.5)+'s';s.style.animationDelay=(Math.random()*1.2)+'s';
+    document.body.appendChild(s);setTimeout(()=>s.remove(),7000);
+  }
+}
+function finish(){
+  const n=order.length;
+  if(wrong.size===0){
+    const msg=rounds===1?'Du svarede rigtigt på alle spørgsmål i første forsøg!':`Du har nu svaret rigtigt på alle spørgsmål efter ${rounds} runder. Det er flot, at du blev ved!`;
+    app.innerHTML=`<div class="card res cong"><div class="emo">🎉</div><div class="big">STORT TILLYKKE!</div><p>${msg}</p><p>Du kan nu alle ${C.length} begreber.</p><button id="fresh">Start forfra</button></div>`;
+    document.getElementById('fresh').onclick=fresh;
+    confetti();return;
+  }
+  app.innerHTML=`<div class="card res"><div class="lbl">Resultat</div><div class="big">${score} / ${n}</div><p>${score>=n*0.7?'Godt klaret!':'Prøv igen, det bliver nemmere hver gang.'}</p><button id="onlyw" class="sec">Kun dem jeg svarede forkert på (${wrong.size})</button><button id="again">Alle spørgsmål igen</button></div>`;
+  document.getElementById('onlyw').onclick=()=>start(true);
+  document.getElementById('again').onclick=()=>start(false);
+}
+function show(){
+  clearTimeout(tm);
+  head();
+  if(i>=order.length){finish();return;}
+  answered=false;
+  const c=C[order[i]];
+  const others=shuffle(C.filter((_,k)=>k!==order[i])).slice(0,3);
+  const opts=shuffle([c,...others]);
+  app.innerHTML=`<div class="card"><div class="lbl">Forklaring</div><div class="def">${c[1]}</div><div class="vis">${V[order[i]]()}</div><div class="ex">Eksempel: ${c[2]}</div><div class="q">Hvilket begreb er det?</div><div class="opts" id="opts"></div><button class="help" id="help">💡 Brug for hjælp?</button><div class="fb" id="fb" aria-live="polite"></div><button class="next" id="next">${i===order.length-1?'Se resultat':'Næste kort'}</button></div>`;
+  const box=document.getElementById('opts');
+  opts.forEach(o=>{
+    const b=document.createElement('button');b.textContent=o[0];
+    b.onclick=()=>pick(b,o[0]===c[0],c,box);
+    box.appendChild(b);
+  });
+  const hb=document.getElementById('help');
+  hb.onclick=()=>openHelp(order[i]);
+  tm=setTimeout(()=>{if(!answered)hb.style.display='block'},20000);
+}
+function pick(b,right,c,box){
+  if(answered)return;answered=true;clearTimeout(tm);document.getElementById('help').style.display='none';
+  if(right){score++;wrong.delete(order[i]);b.classList.add('ok');document.getElementById('fb').textContent='Rigtigt!'}
+  else{wrong.add(order[i]);b.classList.add('no');[...box.children].forEach(x=>{if(x.textContent===c[0])x.classList.add('ok')});document.getElementById('fb').textContent='Ikke helt – det rigtige svar er '+c[0]+'.'}
+  [...box.children].forEach(x=>x.disabled=true);
+  document.getElementById('score').textContent=`Rigtige: ${score}`;
+  const n=document.getElementById('next');n.style.display='block';n.onclick=()=>{i++;show()};n.focus();
+}
+start();
+</script>
+</body>
+</html>
