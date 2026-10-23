@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Matematik-øvelser</title>
+<style>
+:root{--bg:#f4f6fa;--card:#fff;--ink:#1b2a41;--mut:#5b6b82;--blue:#1f4b86;--bd:#d5dce8;--ok:#2e7d32;--okbg:#e3f3e4;--hl:#e8f0fb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#12161d;--card:#1c222c;--ink:#e8edf5;--mut:#9aa8bd;--blue:#7fb0f0;--bd:#344054;--ok:#7ad07f;--okbg:#1d3a20;--hl:#23304a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.45}
+main{max-width:640px;margin:0 auto;padding:20px 16px}
+h1{font-size:1.5rem;margin:0 0 4px;color:var(--blue)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:20px;margin-bottom:14px}
+.hi{font-size:1.3rem;font-weight:700;margin:0 0 6px}
+.msg{background:var(--hl);border-radius:10px;padding:12px 14px;margin:10px 0}
+.bar{height:8px;background:var(--bd);border-radius:4px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--ok);transition:width .4s}
+.sm{font-size:.85rem;color:var(--mut)}
+input{font:inherit;width:100%;padding:12px;border:2px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--ink);margin:10px 0}
+input:focus{outline:none;border-color:var(--blue)}
+button{font:inherit;cursor:pointer;border-radius:10px;padding:12px 14px;border:2px solid var(--blue);background:var(--blue);color:var(--card);width:100%;font-weight:600}
+.ex{display:flex;gap:14px;align-items:center;text-decoration:none;color:var(--ink);background:var(--card);border:2px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:12px}
+.ex:hover,.ex:focus-visible{border-color:var(--blue)}
+.ex.done{border-color:var(--ok);background:var(--okbg)}
+.ik{font-size:2rem}
+.tx{flex:1;min-width:0}
+.tx b{display:block}
+.tx span{font-size:.9rem;color:var(--mut)}
+.ck{flex:none;width:34px;height:34px;border-radius:50%;border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;font-weight:700;color:transparent}
+.done .ck{background:var(--ok);border-color:var(--ok);color:#fff}
+.lnk{background:none;border:none;color:var(--mut);width:auto;padding:6px;font-weight:400;font-size:.85rem;text-decoration:underline}
+.ft{text-align:center;margin-top:18px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Matematik-øvelser</h1>
+  <div id="app"></div>
+</main>
+<script src="faelles.js"></script>
+<script>
+// Tilføj en ny øvelse ved at sætte en linje mere ind her (og lægge filen i samme mappe).
+const E=[
+  {id:'statistik',ikon:'📊',titel:'Statistik: hvilket begreb er det?',tekst:'Typetal, median, gennemsnit og andre begreber.',fil:'statistik.html'}
+];
+const app=document.getElementById('app');
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+function login(){
+  app.innerHTML=`<div class="card"><div class="hi">Velkommen! 👋</div><p>Hvad skal jeg kalde dig? Skriv dit fornavn eller et kaldenavn.</p><label for="n" class="sm">Dit navn</label><input id="n" maxlength="20" autocomplete="off" placeholder="Fx Mikkel"><button id="go">Lad os komme i gang</button><p class="sm">Navnet bliver kun gemt på din egen telefon eller computer.</p></div>`;
+  const n=document.getElementById('n');
+  const go=()=>{if(n.value.trim()){FG.setNavn(n.value);render()}else n.focus()};
+  document.getElementById('go').onclick=go;
+  n.onkeydown=e=>{if(e.key==='Enter')go()};
+  n.focus();
+}
+
+function render(){
+  const navn=FG.navn();
+  if(!navn){login();return}
+  const klar=E.filter(e=>FG.klar(e.id)).length,alle=E.length;
+  const t=new Date().getHours();
+  const hej=t<10?'Godmorgen':t<12?'Godformiddag':t<18?'Goddag':'Godaften';
+  const msg=klar===alle?pick([`Du har klaret alle øvelser, ${navn}! Rigtig flot arbejde.`,`Wow, ${navn}, du er helt i mål! Det kan du være stolt af.`]):
+    klar===0?pick([`Du må rigtig gerne lave fejl, ${navn}. Det er sådan, man lærer.`,`Klar til at komme i gang? Vælg en øvelse, og tag den i dit eget tempo.`,`Et lille skridt ad gangen, ${navn}. Du kan mere, end du tror.`]):
+    pick([`Godt gået, ${navn}! Du har allerede klaret ${klar} af ${alle}. Hvad skal du prøve nu?`,`Du er godt på vej, ${navn}. Bliv ved, det virker!`]);
+  app.innerHTML=`<div class="card"><div class="hi">${hej}, ${navn}! 👋</div><div class="msg">${msg}</div><div class="sm">${klar} af ${alle} øvelser klaret</div><div class="bar"><i style="width:${klar/alle*100}%"></i></div></div><div id="liste"></div><div class="ft"><button class="lnk" id="skift">Skift navn</button><button class="lnk" id="nul">Nulstil mine hak</button></div>`;
+  const l=document.getElementById('liste');
+  E.forEach(e=>{
+    const d=FG.klar(e.id);
+    const a=document.createElement('a');
+    a.className='ex'+(d?' done':'');a.href=e.fil;
+    a.innerHTML=`<span class="ik">${e.ikon}</span><span class="tx"><b></b><span></span></span><span class="ck" aria-label="${d?'Klaret':'Ikke klaret endnu'}">✓</span>`;
+    a.querySelector('b').textContent=e.titel;
+    a.querySelector('.tx span').textContent=d?'Klaret! Du kan altid prøve igen.':e.tekst;
+    l.appendChild(a);
+  });
+  document.getElementById('skift').onclick=()=>{FG.setNavn('');render()};
+  document.getElementById('nul').onclick=()=>{if(confirm('Vil du fjerne alle dine hak?')){FG.nulstil();render()}};
+}
+render();
+</script>
+</body>
+</html>
