@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Statistik – flashcards</title>
+<style>
+:root{--bg:#f4f6fa;--card:#fff;--ink:#1b2a41;--mut:#5b6b82;--blue:#1f4b86;--bd:#d5dce8;--ok:#2e7d32;--okbg:#e3f3e4;--no:#c62828;--nobg:#fbe4e4;--hl:#e8f0fb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#12161d;--card:#1c222c;--ink:#e8edf5;--mut:#9aa8bd;--blue:#7fb0f0;--bd:#344054;--ok:#7ad07f;--okbg:#1d3a20;--no:#f08a8a;--nobg:#401f1f;--hl:#23304a}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#12161d;--card:#1c222c;--ink:#e8edf5;--mut:#9aa8bd;--blue:#7fb0f0;--bd:#344054;--ok:#7ad07f;--okbg:#1d3a20;--no:#f08a8a;--nobg:#401f1f;--hl:#23304a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.45}
+main{max-width:640px;margin:0 auto;padding:16px}
+h1{font-size:1.1rem;margin:0 0 4px;color:var(--blue)}
+.top{display:flex;justify-content:space-between;align-items:center;color:var(--mut);font-size:.9rem;margin-bottom:12px}
+.bar{height:6px;background:var(--bd);border-radius:3px;overflow:hidden;margin-bottom:16px}
+.bar i{display:block;height:100%;background:var(--blue);width:0;transition:width .3s}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:20px}
+.lbl{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.def{font-size:1.2rem;font-weight:600;margin:6px 0 14px}
+.ex{background:var(--hl);border-radius:10px;padding:10px 12px;font-size:.95rem;color:var(--ink)}
+.q{margin:18px 0 8px;font-weight:600}
+.opts{display:grid;gap:8px}
+button{font:inherit;color:var(--ink);background:var(--card);border:2px solid var(--bd);border-radius:10px;padding:12px 14px;text-align:left;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--blue)}
+button:disabled{cursor:default}
+button.ok{border-color:var(--ok);background:var(--okbg)}
+button.no{border-color:var(--no);background:var(--nobg)}
+.fb{min-height:1.5em;margin:12px 0 0;font-weight:600}
+.next{margin-top:12px;background:var(--blue);color:var(--card);border-color:var(--blue);text-align:center;display:none;width:100%}
+.res{text-align:center}
+.res .big{font-size:2.4rem;font-weight:700;color:var(--blue)}
+.res button{text-align:center;margin-top:12px;width:100%}
+.res .sec{background:var(--hl);border-color:var(--blue);color:var(--blue);font-weight:600}
+.cong .emo{font-size:4rem;animation:pop 1s ease-in-out infinite alternate}
+.cong .big{font-size:2.6rem;letter-spacing:.04em}
+@keyframes pop{from{transform:scale(1) rotate(-6deg)}to{transform:scale(1.2) rotate(6deg)}}
+.conf{position:fixed;top:-2rem;font-size:1.6rem;pointer-events:none;z-index:30;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(115vh) rotate(540deg)}}
+@media (prefers-reduced-motion:reduce){.cong .emo{animation:none}}
+.help{display:none;margin-top:14px;width:100%;text-align:center;background:var(--hl);border-color:var(--blue);color:var(--blue);font-weight:600}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+.modal.on{display:flex}
+.mbox{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:20px;max-width:520px;width:100%;max-height:85vh;overflow:auto}
+.mbox p{font-size:1.05rem;margin:8px 0 16px}
+.mbox button{width:100%;text-align:center;background:var(--blue);color:var(--card);border-color:var(--blue)}
+.vis{background:var(--hl);border-radius:10px;padding:14px 10px;margin:0 0 12px}
+.row{display:flex;gap:4px;align-items:flex-start}
+.nw{flex:1;min-width:0;text-align:center}
+.nw small{display:block;font-size:.62rem;color:var(--mut);margin-top:3px;line-height:1.2}
+.nb{display:block;border:2px solid var(--bd);border-radius:8px;padding:8px 0;font-weight:700;background:var(--card)}
+.nb.hl{border-color:var(--ok);background:var(--okbg)}
+.grp{border:2px solid var(--ok);border-radius:10px;padding:6px}
+.tk{display:block;width:2px;height:12px;margin:2px auto 0;background:transparent}
+.tk.on{background:var(--ok)}
+.cap{text-align:center;margin-top:10px;font-size:.9rem;color:var(--mut)}
+.cap.b{font-weight:700;color:var(--ink);font-size:1rem}
+.dots{height:66px;display:flex;flex-direction:column-reverse;align-items:center}
+.dot{display:block;width:16px;height:16px;border-radius:50%;background:#6c9bd2;margin:1px 0}
+.dot.g{background:#5aa545}
+.dd{gap:6px}
+.dd .dot{flex:1;max-width:32px;height:auto;aspect-ratio:1;margin:0;background:var(--bd)}
+.dd .dot.g{background:#5aa545}
+.cols .nw>b{display:block;margin-top:2px}
+.arr{flex:none;width:12px;margin-top:10px;color:var(--mut);font-size:.8rem}
+.pb{height:12px;background:var(--bd);border-radius:6px;overflow:hidden;margin:6px 3px}
+.pb i{display:block;height:100%;background:#5aa545}
+.avg{text-align:center;font-weight:700}
+.avg .bar2{height:2px;background:var(--ok);margin:8px 16px}
+.nl{width:100%;height:auto}
+.st{fill:var(--ink);font:600 11px system-ui,sans-serif}
+.nl .ar{stroke:var(--mut);stroke-width:1.5}
+.nl .af{fill:var(--mut)}
+.nl .gl{stroke:var(--ok);stroke-width:4}
+.nl .fc{fill:var(--ok);stroke:var(--ok);stroke-width:2}
+.nl .oc{fill:var(--card);stroke:var(--ok);stroke-width:3}
+.back{font-size:.9rem;color:var(--mut);text-decoration:none;display:inline-block;margin-bottom:6px}
+.btn{display:block;margin-top:12px;padding:12px 14px;border:2px solid var(--bd);border-radius:10px;color:var(--ink);text-decoration:none;text-align:center}
+.dots{height:80px}
+.r12{gap:2px}
+.r12 .nb{padding:6px 0;font-size:.78rem;border-width:1.5px;border-radius:6px}
+.grp .row .nb{padding:7px 0}
+.gd{stroke:var(--bd);stroke-width:1}
+.sx{fill:var(--mut);font:10px system-ui,sans-serif}
+.sv{fill:var(--ink);font:700 10px system-ui,sans-serif}
+.ln{fill:none;stroke:var(--blue);stroke-width:2.5}
+.pt{fill:#5aa545;stroke:var(--blue);stroke-width:2}
+.bl{stroke:var(--ink);stroke-width:2}
+.bb{fill:var(--okbg);stroke:var(--ok);stroke-width:2}
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="index.html">← Startside</a>
+  <h1>Statistik – hvilket begreb er det?</h1>
+  <div class="top"><span id="pos"></span><span id="score"></span></div>
+  <div class="bar"><i id="bar"></i></div>
+  <div id="app"></div>
+</main>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mt"><div class="mbox"><div class="lbl" id="mt">💡 Lidt længere forklaring</div><p id="mp"></p><button id="mc">Luk</button></div></div>
+<script src="faelles.js"></script>
+<script>
+const pick1=a=>a[Math.floor(Math.random()*a.length)];
+const nm=()=>(typeof FG!=='undefined')?FG.navn():'';
+const ros=()=>{const n=nm();return pick1(n?[`Rigtigt, ${n}!`,`Flot klaret, ${n}!`,`Præcis, ${n}!`,'Godt set!']:['Rigtigt!','Flot!','Præcis!','Godt set!'])};
+const trost=()=>{const n=nm();return pick1(n?[`Det er helt okay, ${n}. Man lærer af at tage fejl.`,`Næsten, ${n}! Du får den næste gang.`,`Bare rolig, ${n}. Sådan bliver man bedre.`]:['Det er helt okay. Man lærer af at tage fejl.','Næsten! Du får den næste gang.'])};
+const hils=(s,n)=>{const N=nm(),t=N?', '+N:'';return s>=n*0.7?`Godt klaret${t}! Du er godt på vej.`:`Det er helt okay${t}. Prøv igen, det bliver nemmere hver gang.`};
+const C=[
+['Observationssæt','Alle de tal eller data, vi har samlet.','Eksempel: 12 elever svarer: 2, 1, 4, 0, 2, 3, 1, 2, 4, 3, 1, 2.'],
+['Observation','En enkelt værdi fra vores data.','Eksempel: Elev 4 svarer 0.'],
+['Hyppighed','Hvor mange gange et bestemt tal eller svar optræder.','Eksempel: Tallet 2 optræder 4 gange.'],
+['Summeret hyppighed','Hyppighederne lægges sammen løbende.','Eksempel: 1, 1 + 3 = 4, 4 + 4 = 8, 8 + 2 = 10, 10 + 2 = 12. Til sidst har vi talt alle 12 elever.'],
+['Frekvens','Hvor stor en procentdel en bestemt hyppighed udgør af det samlede antal.','Eksempel: 4 elever ud af 12 har 2 søskende: 4 / 12 × 100 = 33,3 %.'],
+['Summeret frekvens','Frekvenserne lægges sammen løbende.','Eksempel: 8,3 % → 33,3 % → 66,7 % → 83,3 % → 100 %.'],
+['Typetal','Det tal eller svar, der forekommer flest gange.','Eksempel: 2 er med 4 gange.'],
+['Gennemsnit','Alle tallene lægges sammen og divideres med antallet af tal.','Eksempel: 25 / 12 = 2,08, altså ca. 2,1 søskende.'],
+['Median','Tallene sættes i rækkefølge. Ved et lige antal finder vi gennemsnittet af de to midterste.','Eksempel: De to midterste tal er 2 og 2: (2 + 2) / 2 = 2.'],
+['Mindsteværdi','Det mindste tal i vores data.','Eksempel: 0 er det mindste tal i rækken.'],
+['Størsteværdi','Det største tal i vores data.','Eksempel: 4 er det største tal i rækken.'],
+['Variationsbredde','Forskellen mellem det største og det mindste tal.','Eksempel: 4 − 0 = 4.'],
+['Søjlediagram','Viser, hvor mange der er i hver gruppe, ved hjælp af søjler.','Bruges når vi vil sammenligne antal i forskellige grupper.'],
+['Cirkeldiagram','Viser, hvordan en helhed er fordelt i dele eller procent.','Bruges når vi vil vise, hvor stor en del hver gruppe udgør.'],
+['Kurvediagram / sumkurve','Viser, hvordan hyppighederne lægges sammen løbende.','Bruges når vi vil se, hvor mange elever der højst har et bestemt antal søskende.'],
+['Boksplot','Viser, hvordan tallene er fordelt omkring medianen.','Bruges når vi vil se spredning, median og kvartiler.']
+];
+const H=[
+"Forestil dig, at du spørger 12 elever, hvor mange søskende de har. Du skriver alle svarene ned: 2, 1, 4, 0, 2, 3, 1, 2, 4, 3, 1, 2. Hele listen med alle svarene er det, vi leder efter. Det er ikke ét enkelt svar, men alle svarene samlet på ét sted. Det er dine data.",
+"Når du har en liste med svar fra mange elever, er hvert enkelt svar på listen en ting for sig. Elev 4 svarede 0. Det ene svar er det, vi leder efter. En liste med 12 svar indeholder altså 12 af dem, ét for hver elev.",
+"Her tæller vi, hvor tit noget sker. Kig på svarene 2, 1, 4, 0, 2, 3, 1, 2, 4, 3, 1, 2. Tallet 2 står der 4 gange. Tallet 1 står der 3 gange. Tallene 3 og 4 står der 2 gange hver, og tallet 0 står der 1 gang. Det antal gange, fx 4 for tallet 2, er det, vi leder efter. Du finder det ved at sætte en streg, hver gang tallet dukker op.",
+"Vi tæller, hvor mange elever der har 0 søskende: 1. Så lægger vi dem med 1 søskende til: 1 + 3 = 4. Så dem med 2: 4 + 4 = 8. Så dem med 3: 8 + 2 = 10. Til sidst dem med 4: 10 + 2 = 12. Vi bygger altså et antal op trin for trin, og det sidste tal er altid det samlede antal elever. Det handler om antal, ikke om procent.",
+"Nogle gange er det nemmere at sammenligne med procent. 4 elever ud af 12 har 2 søskende. Vi regner: 4 ÷ 12 × 100 = 33,3 %. Så en tredjedel af eleverne har 2 søskende. Det er procenten for ét bestemt tal, vi leder efter.",
+"Først har vi en procent for hvert tal: 8,3 %, 25,0 %, 33,3 %, 16,7 % og 16,7 %. Så lægger vi dem sammen løbende: 8,3 % → 33,3 % → 66,7 % → 83,3 % → 100 %. Det fortæller fx, at 66,7 % af eleverne har 2 søskende eller færre. Det sidste tal er altid 100 %.",
+"Hvilket svar har flest elever givet? Tæl efter: 2 står 4 gange, 1 står 3 gange, 3 og 4 står 2 gange hver, og 0 står 1 gang. Tallet 2 vinder, fordi det står flest gange. Du finder det bare ved at tælle, du skal ikke regne noget ud.",
+"Tænk, at alle skulle have lige mange. Læg først alle svarene sammen: 2+1+4+0+2+3+1+2+4+3+1+2 = 25. Del så med antal elever: 25 ÷ 12 = 2,08. Hvis alle havde lige mange søskende, ville det være cirka 2,1 hver. Det er ikke nødvendigvis et tal, nogen faktisk har svaret.",
+"Sæt først alle tallene i rækkefølge fra lavest til højest: 0, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4. Streg så af fra begge ender, til du når midten. Her er der 12 tal, så der er to i midten: 2 og 2. Når der er to i midten, finder du tallet midt imellem dem: (2 + 2) ÷ 2 = 2. Der er lige mange tal på hver side.",
+"Kig på alle tallene og find det laveste. Det er nemmest, hvis du sætter dem i rækkefølge: 0, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4. Det første tal i rækken er 0. Ingen af eleverne har færre søskende end det.",
+"Kig på alle tallene og find det højeste. Det er nemmest, hvis du sætter dem i rækkefølge: 0, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4. Det sidste tal i rækken er 4. Ingen af eleverne har flere søskende end det.",
+"Det viser, hvor spredt tallene er. Find det højeste tal (4) og det laveste tal (0), og træk dem fra hinanden: 4 − 0 = 4. Er svaret lille, ligger tallene tæt på hinanden. Er svaret stort, er der stor forskel på svarene.",
+"Man tegner en lodret bjælke for hver gruppe. Jo flere elever i gruppen, jo højere bjælke. Her har 1 elev 0 søskende, 3 elever har 1, 4 elever har 2, 2 elever har 3, og 2 elever har 4. Så kan du med det samme se, hvilken gruppe der er størst, og hvilke der er mindst. Det er nemt at sammenligne højderne.",
+"Tænk på en kage, der skal deles. Hele kagen er alle 12 elever, og hvert stykke er en gruppe. Jo flere elever i gruppen, jo større stykke. Her fylder dem med 2 søskende mest: 33,3 %, altså en tredjedel af hele kagen. Alle stykkerne tilsammen er altid 100 %.",
+"Her sætter vi en prik for hvert tal og trækker en streg mellem prikkerne. Højden på prikken er det samlede antal elever, der har så mange søskende eller færre: 1 elev har 0, 4 elever har 0 eller 1, 8 elever har op til 2, 10 elever har op til 3, og alle 12 elever har op til 4. Linjen går derfor kun opad og slutter ved 12.",
+"Her tegner vi en kasse og en streg ud fra hver side af den. Først sætter vi tallene i rækkefølge. Det laveste og det højeste tal er enden på stregerne, her 0 og 4. Inde i kassen er der en streg midt i tallene, her ved 2. Kassen går fra 1 til 3, og her ligger de midterste halvdele af tallene. Man kan på et blik se, hvor spredte tallene er."
+];
+const modal=document.getElementById('modal');
+function openHelp(k){document.getElementById('mp').textContent=H[k];modal.classList.add('on');document.getElementById('mc').focus()}
+function closeHelp(){modal.classList.remove('on')}
+document.getElementById('mc').onclick=closeHelp;
+modal.onclick=e=>{if(e.target===modal)closeHelp()};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp()});
+const S=[0,1,1,1,2,2,2,2,3,3,4,4],R=[2,1,4,0,2,3,1,2,4,3,1,2],CT=[1,3,4,2,2];
+const cap=(t,b)=>`<div class='cap${b?' b':''}'>${t}</div>`;
+const bx=(a,h,lab,tk,c,o)=>`<div class='row ${c||''}'>${a.map((n,k)=>`<div class='nw'><span class='nb${h.includes(k)?' hl':''}'>${n}</span>${lab?`<small>Elev ${k+(o||0)+1}</small>`:''}${tk?`<i class='tk${h.includes(k)?' on':''}'></i>`:''}</div>`).join('')}</div>`;
+const svg=(h,body)=>`<svg viewBox='0 0 300 ${h}' class='nl' role='img'>${body}</svg>`;
+const V=[
+()=>`<div class='grp'>${bx(R.slice(0,6),[],1)}<div style='height:6px'></div>${bx(R.slice(6),[],1,0,'',6)}</div>`+cap('12 elever svarer: Hvor mange søskende?'),
+()=>`<div class='grp'>${bx(R.slice(0,6),[3],1)}<div style='height:6px'></div>${bx(R.slice(6),[],1,0,'',6)}</div>`+cap('Vi vælger ét enkelt elevsvar: Elev 4 svarer 0',1),
+()=>`<div class='row cols'>${CT.map((c,k)=>`<div class='nw'><div class='dots'>${`<b class='dot${k==2?' g':''}'></b>`.repeat(c)}</div><b>${k}</b><small>${c} ${c>1?'gange':'gang'}</small></div>`).join('')}</div>`+cap('Tallet 2 optræder 4 gange',1),
+()=>`<div class='row'>${[[1,'1','0'],[4,'1 + 3','0-1'],[8,'4 + 4','0-2'],[10,'8 + 2','0-3'],[12,'10 + 2','0-4']].map((a,k)=>`${k?`<span class='arr'>→</span>`:''}<div class='nw'><span class='nb${k==4?' hl':''}'>${a[0]}</span><small>${a[1]}</small><small>${a[2]} søsk.</small></div>`).join('')}</div>`+cap('Til sidst har vi talt alle 12 elever',1),
+()=>`<div class='row dd'>${[1,1,1,1,0,0].map(g=>`<b class='dot${g?' g':''}'></b>`).join('')}</div><div style='height:6px'></div><div class='row dd'>${[0,0,0,0,0,0].map(g=>`<b class='dot'></b>`).join('')}</div>`+cap('4 / 12 × 100 = 33,3 %',1),
+()=>`<div class='row cols'>${[['8,3',8.3,'0'],['33,3',33.3,'0-1'],['66,7',66.7,'0-2'],['83,3',83.3,'0-3'],['100',100,'0-4']].map(a=>`<div class='nw'><div class='pb'><i style='width:${a[1]}%'></i></div><b>${a[0]} %</b><small>${a[2]} søsk.</small></div>`).join('')}</div>`+cap('Til sidst er summen 100 %',1),
+()=>bx(R,[0,4,7,11],0,0,'r12')+cap('Hvilket tal ser vi flest gange?')+cap('2 er med 4 gange',1),
+()=>`<div class='avg'><div>2 + 1 + 4 + 0 + 2 + 3</div><div>+ 1 + 2 + 4 + 3 + 1 + 2</div><div class='bar2'></div><div class='cap b'>25 / 12 = 2,08</div></div>`+cap('Cirka 2,1 søskende'),
+()=>bx(S,[5,6],0,1,'r12')+cap('De to midterste tal er 2 og 2',1)+cap('(2 + 2) / 2 = 2'),
+()=>bx(S,[0],0,1,'r12')+cap('0 er det mindste tal',1),
+()=>bx(S,[11],0,1,'r12')+cap('4 er det største tal',1),
+()=>svg(84,`<text x='150' y='11' text-anchor='middle' class='st'>FORSKEL FRA 0 TIL 4</text><line x1='30' y1='24' x2='270' y2='24' class='ar'/><path d='M30 24l8-4v8zM270 24l-8-4v8z' class='af'/><line x1='30' y1='52' x2='270' y2='52' class='gl'/>${[0,1,2,3,4].map(k=>`<circle cx='${30+k*60}' cy='52' r='7' class='${k%4?'oc':'fc'}'/><text x='${30+k*60}' y='76' text-anchor='middle' class='st'>${k}</text>`).join('')}`)+cap('4 − 0 = 4',1),
+()=>svg(150,[0,1,2,3,4].map(v=>`<line x1='40' x2='285' y1='${120-v*25}' y2='${120-v*25}' class='gd'/><text x='32' y='${124-v*25}' text-anchor='end' class='sx'>${v}</text>`).join('')+CT.map((v,k)=>`<rect x='${55+k*46}' y='${120-v*25}' width='34' height='${v*25}' rx='3' fill='${k==2?'#5aa545':'#7aa6c2'}'/><text x='${72+k*46}' y='${114-v*25}' text-anchor='middle' class='sv'>${v}</text><text x='${72+k*46}' y='134' text-anchor='middle' class='sv'>${k}</text>`).join('')+`<text x='162' y='147' text-anchor='middle' class='sx'>Antal søskende</text>`)+cap('Eksempel: Antal søskende hos 12 elever'),
+()=>{const col=['#cfdce5','#92b4c9','#5aa545','#1b3a57','#b4c97a'],pc=['8,3','25,0','33,3','16,7','16,7'];let a=-Math.PI/2,p='';CT.forEach((v,k)=>{const b=a+v/12*2*Math.PI,x0=65+58*Math.cos(a),y0=65+58*Math.sin(a),x1=65+58*Math.cos(b),y1=65+58*Math.sin(b);p+=`<path d='M65 65L${x0} ${y0}A58 58 0 ${v>6?1:0} 1 ${x1} ${y1}Z' fill='${col[k]}' stroke='var(--card)' stroke-width='1.5'/>`;a=b});const lg=CT.map((v,k)=>`<rect x='150' y='${14+k*22}' width='12' height='12' rx='2' fill='${col[k]}'/><text x='168' y='${24+k*22}' class='sv'>${k} søsk. <tspan class='sx'>${pc[k]} %</tspan></text>`).join('');return svg(130,p+lg)+cap('Eksempel: Fordeling af antal søskende')},
+()=>{const P=[1,4,8,10,12],X=k=>50+k*58,Y=v=>120-v*100/12;return svg(150,[0,2,4,6,8,10,12].map(v=>`<line x1='40' x2='285' y1='${Y(v)}' y2='${Y(v)}' class='gd'/><text x='34' y='${Y(v)+3}' text-anchor='end' class='sx'>${v}</text>`).join('')+`<polyline class='ln' points='${P.map((v,k)=>X(k)+','+Y(v)).join(' ')}'/>`+P.map((v,k)=>`<circle cx='${X(k)}' cy='${Y(v)}' r='5' class='pt'/><text x='${X(k)}' y='${Y(v)-9}' text-anchor='middle' class='sv'>${v}</text><text x='${X(k)}' y='134' text-anchor='middle' class='sv'>${k}</text>`).join('')+`<text x='162' y='147' text-anchor='middle' class='sx'>Antal søskende (0, 1, 2, 3, 4)</text>`)+cap('Eksempel: Summeret hyppighed for 12 elever')},
+()=>svg(100,['Min.','Nedre','Median','Øvre','Maks.'].map((t,k)=>`<text x='${30+k*60}' y='12' text-anchor='middle' class='sv'>${t}</text><line x1='${30+k*60}' x2='${30+k*60}' y1='74' y2='80' class='gd'/><text x='${30+k*60}' y='93' text-anchor='middle' class='sx'>${k}</text>`).join('')+`<line x1='30' x2='270' y1='77' y2='77' class='gd'/><line x1='30' x2='90' y1='46' y2='46' class='bl'/><line x1='210' x2='270' y1='46' y2='46' class='bl'/><line x1='30' x2='30' y1='36' y2='56' class='bl'/><line x1='270' x2='270' y1='36' y2='56' class='bl'/><rect x='90' y='28' width='120' height='36' class='bb'/><line x1='150' x2='150' y1='28' y2='64' class='bl' style='stroke-width:3'/>`)+cap('Eksempel: Samme 12 elevsvar som før')+cap('Min. 0 | Q1 1 | Median 2 | Q3 3 | Maks. 4',1)
+];
+const app=document.getElementById('app');
+let order,i,score,answered,tm,rounds=0;const wrong=new Set();
+const shuffle=a=>{a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a};
+function start(only){order=(only===true&&wrong.size)?shuffle([...wrong]):shuffle(C.map((_,k)=>k));i=0;score=0;rounds++;show()}
+function fresh(){wrong.clear();rounds=0;start(false)}
+function head(){document.getElementById('pos').textContent=i<order.length?`Kort ${i+1} af ${order.length}`:'Færdig';document.getElementById('score').textContent=`Rigtige: ${score}`;document.getElementById('bar').style.width=(i/order.length*100)+'%'}
+function confetti(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const e=['🎉','🎊','⭐','✨'];
+  for(let k=0;k<45;k++){
+    const s=document.createElement('span');s.className='conf';s.textContent=e[k%e.length];
+    s.style.left=(Math.random()*96)+'vw';s.style.animationDuration=(2.5+Math.random()*2.5)+'s';s.style.animationDelay=(Math.random()*1.2)+'s';
+    document.body.appendChild(s);setTimeout(()=>s.remove(),7000);
+  }
+}
+function finish(){
+  const n=order.length;
+  if(wrong.size===0){if(typeof FG!=='undefined')FG.markerKlar('statistik');
+    const msg=rounds===1?'Du svarede rigtigt på alle spørgsmål i første forsøg!':`Du har nu svaret rigtigt på alle spørgsmål efter ${rounds} runder. Det er flot, at du blev ved!`;
+    app.innerHTML=`<div class="card res cong"><div class="emo">🎉</div><div class="big">STORT TILLYKKE${nm()?', '+nm().toUpperCase():''}!</div><p>${msg}</p><p>Du kan nu alle ${C.length} begreber.</p><button id="fresh">Start forfra</button><a class="btn" href="index.html">Tilbage til startsiden</a></div>`;
+    document.getElementById('fresh').onclick=fresh;
+    confetti();return;
+  }
+  app.innerHTML=`<div class="card res"><div class="lbl">Resultat</div><div class="big">${score} / ${n}</div><p>${hils(score,n)}</p><button id="onlyw" class="sec">Kun dem jeg svarede forkert på (${wrong.size})</button><button id="again">Alle spørgsmål igen</button></div>`;
+  document.getElementById('onlyw').onclick=()=>start(true);
+  document.getElementById('again').onclick=()=>start(false);
+}
+function show(){
+  clearTimeout(tm);
+  head();
+  if(i>=order.length){finish();return;}
+  answered=false;
+  const c=C[order[i]];
+  const others=shuffle(C.filter((_,k)=>k!==order[i])).slice(0,3);
+  const opts=shuffle([c,...others]);
+  app.innerHTML=`<div class="card"><div class="lbl">Forklaring</div><div class="def">${c[1]}</div><div class="vis">${V[order[i]]()}</div><div class="ex">${c[2]}</div><div class="q">Hvilket begreb er det?</div><div class="opts" id="opts"></div><button class="help" id="help">💡 Brug for hjælp?</button><div class="fb" id="fb" aria-live="polite"></div><button class="next" id="next">${i===order.length-1?'Se resultat':'Næste kort'}</button></div>`;
+  const box=document.getElementById('opts');
+  opts.forEach(o=>{
+    const b=document.createElement('button');b.textContent=o[0];
+    b.onclick=()=>pick(b,o[0]===c[0],c,box);
+    box.appendChild(b);
+  });
+  const hb=document.getElementById('help');
+  hb.onclick=()=>openHelp(order[i]);
+  tm=setTimeout(()=>{if(!answered)hb.style.display='block'},20000);
+}
+function pick(b,right,c,box){
+  if(answered)return;answered=true;clearTimeout(tm);document.getElementById('help').style.display='none';
+  if(right){score++;wrong.delete(order[i]);b.classList.add('ok');document.getElementById('fb').textContent=ros()}
+  else{wrong.add(order[i]);b.classList.add('no');[...box.children].forEach(x=>{if(x.textContent===c[0])x.classList.add('ok')});document.getElementById('fb').textContent='Ikke helt, det rigtige svar er '+c[0]+'. '+trost()}
+  [...box.children].forEach(x=>x.disabled=true);
+  document.getElementById('score').textContent=`Rigtige: ${score}`;
+  const n=document.getElementById('next');n.style.display='block';n.onclick=()=>{i++;show()};n.focus();
+}
+start();
+</script>
+</body>
+</html>
